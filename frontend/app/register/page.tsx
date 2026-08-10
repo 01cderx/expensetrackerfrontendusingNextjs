@@ -1,0 +1,111 @@
+"use client";
+
+import { useState, FormEvent } from "react";
+import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
+
+export default function RegisterPage() {
+  const { register } = useAuth();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setError("");
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters.");
+      return;
+    }
+    setLoading(true);
+    try {
+      await register(name, email, password);
+    } catch (err: any) {
+      setError(err?.response?.data?.message || "Could not create account.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center px-6">
+      <div className="w-full max-w-sm">
+        <div className="text-center mb-8">
+          <p className="font-display italic text-3xl text-forest-700">Ledger</p>
+          <p className="text-sm text-ink/50 mt-2">
+            A calm, clear place to track where your money goes.
+          </p>
+        </div>
+
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white/70 border border-ink/10 rounded-sm p-8 space-y-4"
+        >
+          <h1 className="font-display text-xl text-ink mb-2">Create your account</h1>
+
+          {error && (
+            <p className="text-sm text-clay bg-clay/10 border border-clay/30 rounded-sm px-3 py-2">
+              {error}
+            </p>
+          )}
+
+          <div>
+            <label className="block text-xs uppercase tracking-widest text-ink/50 mb-1">
+              Name
+            </label>
+            <input
+              required
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full border border-ink/15 rounded-sm px-3 py-2 bg-paper focus:border-forest-500 outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs uppercase tracking-widest text-ink/50 mb-1">
+              Email
+            </label>
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full border border-ink/15 rounded-sm px-3 py-2 bg-paper focus:border-forest-500 outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs uppercase tracking-widest text-ink/50 mb-1">
+              Password
+            </label>
+            <input
+              type="password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full border border-ink/15 rounded-sm px-3 py-2 bg-paper focus:border-forest-500 outline-none"
+            />
+            <p className="text-xs text-ink/40 mt-1">At least 6 characters.</p>
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-forest-600 text-paper py-2.5 rounded-sm text-sm hover:bg-forest-700 transition-colors disabled:opacity-50"
+          >
+            {loading ? "Creating account…" : "Create account"}
+          </button>
+        </form>
+
+        <p className="text-center text-sm text-ink/50 mt-6">
+          Already have an account?{" "}
+          <Link href="/login" className="text-forest-700 font-medium hover:underline">
+            Sign in
+          </Link>
+        </p>
+      </div>
+    </div>
+  );
+}

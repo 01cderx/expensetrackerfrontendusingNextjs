@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ledger-line: rgba(19, 36, 32, 0.12);
+}
+
+* {
+  scrollbar-width: thin;
+}
+
+body {
+  background-image: linear-gradient(
+    to bottom,
+    rgba(47, 102, 80, 0.04),
+    rgba(47, 102, 80, 0) 240px
+  );
+}
+
+/* Signature element: hairline "ledger rule" divider used across lists */
+.ledger-row {
+  border-bottom: 1px solid var(--ledger-line);
+}
+.ledger-row:last-child {
+  border-bottom: none;
+}
+
+.tabular {
+  font-family: var(--font-jetbrains), monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+::selection {
+  background: #c9a24b55;
+}
+
+:focus-visible {
+  outline: 2px solid #2f6650;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
