@@ -17,7 +17,7 @@ import { Expense, ExpenseSummary } from "@/lib/types";
 const PALETTE = ["#2F6650", "#C15F3C", "#C9A24B", "#5B7FA6", "#8A5B9B", "#4A9B8E", "#8FB3A0"];
 
 const formatCurrency = (n: number) =>
-  new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(n);
+  new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(n);
 
 export default function DashboardPage() {
   const [summary, setSummary] = useState<ExpenseSummary | null>(null);
