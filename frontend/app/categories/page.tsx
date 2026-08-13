@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Navbar from "@/components/Navbar";
+import AppShell from "@/components/AppShell";
 import CategoryManager from "@/components/CategoryManager";
 import api from "@/lib/api";
 import { Category } from "@/lib/types";
@@ -37,23 +37,17 @@ export default function CategoriesPage() {
   };
 
   return (
-    <div className="min-h-screen">
-      <Navbar />
-      <main className="max-w-5xl mx-auto px-6 py-10">
-        <h1 className="font-display text-3xl italic text-ink mb-1">Categories</h1>
-        <p className="text-ink/50 mb-8">Group your spending into what makes sense to you.</p>
-
-        {loading ? (
-          <p className="text-ink/40">Loading…</p>
-        ) : (
-          <CategoryManager
-            categories={categories}
-            onCreate={handleCreate}
-            onUpdate={handleUpdate}
-            onDelete={handleDelete}
-          />
-        )}
-      </main>
-    </div>
+    <AppShell title="Categories" subtitle="Group your spending into what makes sense to you.">
+      {loading ? (
+        <p className="text-slate-400">Loading…</p>
+      ) : (
+        <CategoryManager
+          categories={categories}
+          onCreate={handleCreate}
+          onUpdate={handleUpdate}
+          onDelete={handleDelete}
+        />
+      )}
+    </AppShell>
   );
 }
