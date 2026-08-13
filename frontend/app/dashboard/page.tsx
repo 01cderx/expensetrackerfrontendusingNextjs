@@ -33,10 +33,10 @@ export default function DashboardPage() {
       try {
         const [summaryRes, expensesRes] = await Promise.all([
           api.get("/expenses/summary"),
-          api.get("/expenses"),
+          api.get("/expenses?page=0&size=6"),
         ]);
         setSummary(summaryRes.data);
-        setRecent(expensesRes.data.slice(0, 6));
+        setRecent(expensesRes.data.content);
       } finally {
         setLoading(false);
       }
