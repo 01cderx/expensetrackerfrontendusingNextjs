@@ -9,7 +9,7 @@ interface ExpenseListProps {
 }
 
 const formatCurrency = (n: number) =>
-  new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(n);
+  new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(n);
 
 const formatDate = (iso: string) =>
   new Date(iso + "T00:00:00").toLocaleDateString("en-US", {
@@ -21,7 +21,7 @@ const formatDate = (iso: string) =>
 export default function ExpenseList({ expenses, onEdit, onDelete }: ExpenseListProps) {
   if (expenses.length === 0) {
     return (
-      <div className="bg-white/60 border border-dashed border-ink/20 rounded-sm p-10 text-center">
+      <div className="bg-white/60 border border-dashed border-slate-200 rounded-2xl p-10 text-center">
         <p className="font-display italic text-lg text-ink/60">
           No expenses yet.
         </p>
@@ -33,11 +33,11 @@ export default function ExpenseList({ expenses, onEdit, onDelete }: ExpenseListP
   }
 
   return (
-    <div className="bg-white/60 border border-ink/10 rounded-sm">
+    <div className="bg-white rounded-2xl shadow-card border border-slate-100">
       {expenses.map((expense) => (
         <div
           key={expense.id}
-          className="ledger-row flex items-center justify-between gap-4 px-6 py-4"
+          className="border-b border-slate-50 last:border-none flex items-center justify-between gap-4 px-6 py-4"
         >
           <div className="flex items-center gap-4 min-w-0">
             <span
@@ -53,18 +53,18 @@ export default function ExpenseList({ expenses, onEdit, onDelete }: ExpenseListP
             </div>
           </div>
           <div className="flex items-center gap-4 shrink-0">
-            <span className="tabular font-medium text-clay">
+            <span className="tabular font-medium text-rose">
               −{formatCurrency(expense.amount)}
             </span>
             <button
               onClick={() => onEdit(expense)}
-              className="text-xs text-ink/50 hover:text-forest-700"
+              className="text-xs text-ink/50 hover:text-teal-600"
             >
               Edit
             </button>
             <button
               onClick={() => expense.id && onDelete(expense.id)}
-              className="text-xs text-ink/50 hover:text-clay"
+              className="text-xs text-ink/50 hover:text-rose"
             >
               Delete
             </button>
