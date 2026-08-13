@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Navbar from "@/components/Navbar";
+import { Plus } from "lucide-react";
+import AppShell from "@/components/AppShell";
 import ExpenseForm from "@/components/ExpenseForm";
 import ExpenseList from "@/components/ExpenseList";
 import api from "@/lib/api";
@@ -51,47 +52,42 @@ export default function ExpensesPage() {
   };
 
   return (
-    <div className="min-h-screen">
-      <Navbar />
-      <main className="max-w-5xl mx-auto px-6 py-10">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="font-display text-3xl italic text-ink mb-1">Expenses</h1>
-            <p className="text-ink/50">Every entry, in one ledger.</p>
-          </div>
-          {!showForm && (
-            <button
-              onClick={() => {
-                setEditing(null);
-                setShowForm(true);
-              }}
-              className="bg-forest-600 text-paper px-4 py-2 rounded-sm text-sm hover:bg-forest-700 transition-colors"
-            >
-              + Add expense
-            </button>
-          )}
+    <AppShell
+      title="Expenses"
+      subtitle="Every entry, in one place."
+      action={
+        !showForm && (
+          <button
+            onClick={() => {
+              setEditing(null);
+              setShowForm(true);
+            }}
+            className="flex items-center gap-2 bg-teal-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors"
+          >
+            <Plus size={16} /> Add expense
+          </button>
+        )
+      }
+    >
+      {showForm && (
+        <div className="mb-6">
+          <ExpenseForm
+            categories={categories}
+            initial={editing}
+            onSubmit={handleCreateOrUpdate}
+            onCancel={() => {
+              setShowForm(false);
+              setEditing(null);
+            }}
+          />
         </div>
+      )}
 
-        {showForm && (
-          <div className="mb-8">
-            <ExpenseForm
-              categories={categories}
-              initial={editing}
-              onSubmit={handleCreateOrUpdate}
-              onCancel={() => {
-                setShowForm(false);
-                setEditing(null);
-              }}
-            />
-          </div>
-        )}
-
-        {loading ? (
-          <p className="text-ink/40">Loading…</p>
-        ) : (
-          <ExpenseList expenses={expenses} onEdit={handleEdit} onDelete={handleDelete} />
-        )}
-      </main>
-    </div>
+      {loading ? (
+        <p className="text-slate-400">Loading…</p>
+      ) : (
+        <ExpenseList expenses={expenses} onEdit={handleEdit} onDelete={handleDelete} />
+      )}
+    </AppShell>
   );
 }
