@@ -60,14 +60,14 @@ export default function CategoryManager({
     <div className="grid md:grid-cols-2 gap-8">
       <form
         onSubmit={handleSubmit}
-        className="bg-white/70 border border-ink/10 rounded-sm p-6 space-y-4 h-fit"
+        className="bg-white rounded-2xl shadow-card border border-slate-100 p-6 space-y-4 h-fit"
       >
-        <h3 className="font-display text-lg text-forest-700">
+        <h3 className="font-display text-lg text-teal-600">
           {editingId ? "Edit category" : "New category"}
         </h3>
 
         {error && (
-          <p className="text-sm text-clay bg-clay/10 border border-clay/30 rounded-sm px-3 py-2">
+          <p className="text-sm text-rose bg-rose/10 border border-rose/30 rounded-sm px-3 py-2">
             {error}
           </p>
         )}
@@ -80,7 +80,7 @@ export default function CategoryManager({
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Groceries"
-            className="w-full border border-ink/15 rounded-sm px-3 py-2 bg-paper focus:border-forest-500 outline-none"
+            className="w-full border border-slate-200 rounded-sm px-3 py-2 bg-paper focus:border-teal-500 outline-none"
           />
         </div>
 
@@ -108,7 +108,7 @@ export default function CategoryManager({
           <button
             type="submit"
             disabled={submitting}
-            className="bg-forest-600 text-paper px-4 py-2 rounded-sm text-sm hover:bg-forest-700 transition-colors disabled:opacity-50"
+            className="bg-teal-600 text-paper px-4 py-2 rounded-sm text-sm hover:bg-teal-700 transition-colors disabled:opacity-50"
           >
             {submitting ? "Saving…" : editingId ? "Save changes" : "Add category"}
           </button>
@@ -120,23 +120,23 @@ export default function CategoryManager({
         </div>
       </form>
 
-      <div className="bg-white/60 border border-ink/10 rounded-sm">
+      <div className="bg-white rounded-2xl shadow-card border border-slate-100">
         {categories.length === 0 ? (
           <p className="p-6 text-sm text-ink/50">No categories yet — create one to organize your expenses.</p>
         ) : (
           categories.map((c) => (
-            <div key={c.id} className="ledger-row flex items-center justify-between px-6 py-4">
+            <div key={c.id} className="border-b border-slate-50 last:border-none flex items-center justify-between px-6 py-4">
               <div className="flex items-center gap-3">
                 <span className="w-3 h-3 rounded-full" style={{ backgroundColor: c.color }} />
                 <span className="font-medium">{c.name}</span>
               </div>
               <div className="flex items-center gap-4">
-                <button onClick={() => startEdit(c)} className="text-xs text-ink/50 hover:text-forest-700">
+                <button onClick={() => startEdit(c)} className="text-xs text-ink/50 hover:text-teal-600">
                   Edit
                 </button>
                 <button
                   onClick={() => c.id && onDelete(c.id)}
-                  className="text-xs text-ink/50 hover:text-clay"
+                  className="text-xs text-ink/50 hover:text-rose"
                 >
                   Delete
                 </button>
