@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus } from "lucide-react";
+import { Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import AppShell from "@/components/AppShell";
 import ExpenseForm from "@/components/ExpenseForm";
 import ExpenseList from "@/components/ExpenseList";
 import api from "@/lib/api";
-import { Category, Expense } from "@/lib/types";
+import { Category, Expense, PagedResponse } from "@/lib/types";
+
+const PAGE_SIZE = 15;
 
 export default function ExpensesPage() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -15,19 +17,29 @@ export default function ExpensesPage() {
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const loadData = async () => {
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalElements, setTotalElements] = useState(0);
+
+  const loadData = async (targetPage = page) => {
+    setLoading(true);
     const [expensesRes, categoriesRes] = await Promise.all([
-      api.get("/expenses"),
-      api.get("/categories"),
+      api.get<PagedResponse<Expense>>(`/expenses?page=${targetPage}&size=${PAGE_SIZE}`),
+      api.get(categoriesEndpoint()),
     ]);
-    setExpenses(expensesRes.data);
+    setExpenses(expensesRes.data.content);
+    setTotalPages(expensesRes.data.totalPages);
+    setTotalElements(expensesRes.data.totalElements);
     setCategories(categoriesRes.data);
     setLoading(false);
   };
 
+  const categoriesEndpoint = () => "/categories";
+
   useEffect(() => {
-    loadData();
-  }, []);
+    loadData(page);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page]);
 
   const handleCreateOrUpdate = async (expense: Expense) => {
     if (editing?.id) {
@@ -37,7 +49,10 @@ export default function ExpensesPage() {
     }
     setShowForm(false);
     setEditing(null);
-    await loadData();
+    // After adding/editing, jump back to page 0 so the change is visible
+    // (list is sorted newest-first).
+    setPage(0);
+    await loadData(0);
   };
 
   const handleEdit = (expense: Expense) => {
@@ -48,13 +63,13 @@ export default function ExpensesPage() {
   const handleDelete = async (id: number) => {
     if (!confirm("Delete this expense?")) return;
     await api.delete(`/expenses/${id}`);
-    await loadData();
+    await loadData(page);
   };
 
   return (
     <AppShell
       title="Expenses"
-      subtitle="Every entry, in one place."
+      subtitle={`${totalElements} total entr${totalElements === 1 ? "y" : "ies"}`}
       action={
         !showForm && (
           <button
@@ -86,7 +101,33 @@ export default function ExpensesPage() {
       {loading ? (
         <p className="text-slate-400">Loading…</p>
       ) : (
-        <ExpenseList expenses={expenses} onEdit={handleEdit} onDelete={handleDelete} />
+        <>
+          <ExpenseList expenses={expenses} onEdit={handleEdit} onDelete={handleDelete} />
+
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between mt-4">
+              <p className="text-xs text-slate-500">
+                Page {page + 1} of {totalPages}
+              </p>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setPage((p) => Math.max(0, p - 1))}
+                  disabled={page === 0}
+                  className="flex items-center gap-1 text-sm px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  <ChevronLeft size={14} /> Prev
+                </button>
+                <button
+                  onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+                  disabled={page >= totalPages - 1}
+                  className="flex items-center gap-1 text-sm px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  Next <ChevronRight size={14} />
+                </button>
+              </div>
+            </div>
+          )}
+        </>
       )}
     </AppShell>
   );
