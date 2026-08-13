@@ -9,7 +9,7 @@ interface ExpenseListProps {
 }
 
 const formatCurrency = (n: number) =>
-  new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(n);
+  new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(n);
 
 const formatDate = (iso: string) =>
   new Date(iso + "T00:00:00").toLocaleDateString("en-US", {
