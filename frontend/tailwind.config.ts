@@ -6,22 +6,35 @@ const config: Config = {
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
-    extend: {
-      colors: {
-        ink: "#132420",
-        paper: "#F6F3EC",
-        forest: {
-          50: "#EEF3F0",
-          100: "#D6E3DA",
-          300: "#8FB3A0",
-          500: "#2F6650",
-          600: "#245140",
-          700: "#1B3D30",
-          900: "#0F241D",
-        },
-        clay: "#C15F3C",
-        gold: "#C9A24B",
-      },
+    extend: {colors: {
+  ink: "#0F172A",
+  paper: "#F8FAFC",
+  sidebar: {
+    DEFAULT: "#0B1220",
+    hover: "#151E32",
+  },
+  teal: {
+    50: "#EFFCF9",
+    100: "#CCFBEF",
+    400: "#2DD4BF",
+    500: "#14B8A6",
+    600: "#0D9488",
+    700: "#0F766E",
+  },
+  rose: "#F43F5E",
+  amber: "#F59E0B",
+  slate: {
+    50: "#F8FAFC",
+    100: "#F1F5F9",
+    200: "#E2E8F0",
+    400: "#94A3B8",
+    500: "#64748B",
+    600: "#475569",
+  },
+},
+boxShadow: {
+  card: "0 1px 2px rgba(15,23,42,0.04), 0 8px 24px -8px rgba(15,23,42,0.08)",
+},
       fontFamily: {
         display: ["var(--font-fraunces)", "serif"],
         body: ["var(--font-inter)", "sans-serif"],
