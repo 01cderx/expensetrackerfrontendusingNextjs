@@ -66,14 +66,14 @@ export default function ExpenseForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-white/70 border border-ink/10 rounded-sm p-6 space-y-4"
+      className="bg-white rounded-2xl shadow-card border border-slate-100 p-6 space-y-4"
     >
-      <h3 className="font-display text-lg text-forest-700">
+      <h3 className="font-display text-lg text-teal-600">
         {initial?.id ? "Edit expense" : "Add an expense"}
       </h3>
 
       {error && (
-        <p className="text-sm text-clay bg-clay/10 border border-clay/30 rounded-sm px-3 py-2">
+        <p className="text-sm text-rose bg-rose/10 border border-rose/30 rounded-sm px-3 py-2">
           {error}
         </p>
       )}
@@ -87,11 +87,11 @@ export default function ExpenseForm({
           value={form.title}
           onChange={handleChange}
           placeholder="Coffee with Sam"
-          className="w-full border border-ink/15 rounded-sm px-3 py-2 bg-paper focus:border-forest-500 outline-none"
+          className="w-full border border-slate-200 rounded-sm px-3 py-2 bg-paper focus:border-teal-500 outline-none"
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className="block text-xs uppercase tracking-widest text-ink/50 mb-1">
             Amount
@@ -104,7 +104,7 @@ export default function ExpenseForm({
             value={form.amount || ""}
             onChange={handleChange}
             placeholder="0.00"
-            className="w-full border border-ink/15 rounded-sm px-3 py-2 bg-paper tabular focus:border-forest-500 outline-none"
+            className="w-full border border-slate-200 rounded-sm px-3 py-2 bg-paper tabular focus:border-teal-500 outline-none"
           />
         </div>
         <div>
@@ -116,7 +116,7 @@ export default function ExpenseForm({
             type="date"
             value={form.date}
             onChange={handleChange}
-            className="w-full border border-ink/15 rounded-sm px-3 py-2 bg-paper focus:border-forest-500 outline-none"
+            className="w-full border border-slate-200 rounded-sm px-3 py-2 bg-paper focus:border-teal-500 outline-none"
           />
         </div>
       </div>
@@ -129,7 +129,7 @@ export default function ExpenseForm({
           name="categoryId"
           value={form.categoryId ?? ""}
           onChange={handleChange}
-          className="w-full border border-ink/15 rounded-sm px-3 py-2 bg-paper focus:border-forest-500 outline-none"
+          className="w-full border border-slate-200 rounded-sm px-3 py-2 bg-paper focus:border-teal-500 outline-none"
         >
           <option value="">Uncategorized</option>
           {categories.map((c) => (
@@ -149,7 +149,7 @@ export default function ExpenseForm({
           value={form.notes ?? ""}
           onChange={handleChange}
           rows={2}
-          className="w-full border border-ink/15 rounded-sm px-3 py-2 bg-paper focus:border-forest-500 outline-none"
+          className="w-full border border-slate-200 rounded-sm px-3 py-2 bg-paper focus:border-teal-500 outline-none"
         />
       </div>
 
@@ -157,7 +157,7 @@ export default function ExpenseForm({
         <button
           type="submit"
           disabled={submitting}
-          className="bg-forest-600 text-paper px-4 py-2 rounded-sm text-sm hover:bg-forest-700 transition-colors disabled:opacity-50"
+          className="bg-teal-600 text-paper px-4 py-2 rounded-sm text-sm hover:bg-teal-700 transition-colors disabled:opacity-50"
         >
           {submitting ? "Saving…" : initial?.id ? "Save changes" : "Add expense"}
         </button>
