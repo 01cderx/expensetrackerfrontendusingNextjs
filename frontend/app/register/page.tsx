@@ -52,10 +52,11 @@ export default function RegisterPage() {
           )}
 
           <div>
-            <label className="block text-xs uppercase tracking-widest text-ink/50 mb-1">
+            <label htmlFor="name" className="block text-xs uppercase tracking-widest text-ink/50 mb-1">
               Name
             </label>
             <input
+              id="name"
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -64,10 +65,11 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <label className="block text-xs uppercase tracking-widest text-ink/50 mb-1">
+            <label htmlFor="email" className="block text-xs uppercase tracking-widest text-ink/50 mb-1">
               Email
             </label>
             <input
+              id="email"
               type="email"
               required
               value={email}
@@ -77,10 +79,11 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <label className="block text-xs uppercase tracking-widest text-ink/50 mb-1">
+            <label htmlFor="password" className="block text-xs uppercase tracking-widest text-ink/50 mb-1">
               Password
             </label>
             <input
+              id="password"
               type="password"
               required
               value={password}
