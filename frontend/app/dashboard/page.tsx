@@ -1,14 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
-  Tooltip,
-  Legend,
-} from "recharts";
+import dynamic from "next/dynamic";
 import { Wallet, TrendingDown, Calendar, Plus } from "lucide-react";
 import Link from "next/link";
 import AppShell from "@/components/AppShell";
@@ -16,6 +9,17 @@ import StatCard from "@/components/StatCard";
 import api from "@/lib/api";
 import { Expense, ExpenseSummary } from "@/lib/types";
 import { useAuth } from "@/context/AuthContext";
+
+// Recharts is a fairly large library — load it only on the client, only when
+// this page actually renders, instead of bundling it into the initial page load.
+const CategoryPieChart = dynamic(() => import("@/components/CategoryPieChart"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-[260px] flex items-center justify-center text-sm text-slate-400">
+      Loading chart…
+    </div>
+  ),
+});
 
 const PALETTE = ["#14B8A6", "#F43F5E", "#F59E0B", "#6366F1", "#8B5CF6", "#0EA5E9", "#94A3B8"];
 
@@ -100,28 +104,7 @@ export default function DashboardPage() {
                   No expenses recorded yet.
                 </p>
               ) : (
-                <ResponsiveContainer width="100%" height={260}>
-                  <PieChart>
-                    <Pie
-                      data={chartData}
-                      dataKey="value"
-                      nameKey="name"
-                      innerRadius={60}
-                      outerRadius={95}
-                      paddingAngle={3}
-                      stroke="none"
-                    >
-                      {chartData.map((_, idx) => (
-                        <Cell key={idx} fill={PALETTE[idx % PALETTE.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip formatter={(v: number) => formatCurrency(v)} />
-                    <Legend
-                      iconType="circle"
-                      wrapperStyle={{ fontSize: "12px" }}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
+                <CategoryPieChart data={chartData} palette={PALETTE} formatCurrency={formatCurrency} />
               )}
             </div>
 
