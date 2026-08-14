@@ -28,7 +28,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center px-6">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <p className="font-display italic text-3xl text-forest-700">Ledger</p>
+          <p className="font-display italic text-3xl text-teal-600">Ledger</p>
           <p className="text-sm text-ink/50 mt-2">
             A calm, clear place to track where your money goes.
           </p>
@@ -41,7 +41,7 @@ export default function LoginPage() {
           <h1 className="font-display text-xl text-ink mb-2">Welcome back</h1>
 
           {error && (
-            <p className="text-sm text-clay bg-clay/10 border border-clay/30 rounded-sm px-3 py-2">
+            <p className="text-sm text-rose bg-rose/10 border border-rose/30 rounded-sm px-3 py-2">
               {error}
             </p>
           )}
@@ -55,7 +55,7 @@ export default function LoginPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full border border-ink/15 rounded-sm px-3 py-2 bg-paper focus:border-forest-500 outline-none"
+              className="w-full border border-ink/15 rounded-sm px-3 py-2 bg-paper focus:border-teal-500 outline-none"
             />
           </div>
 
@@ -68,14 +68,14 @@ export default function LoginPage() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full border border-ink/15 rounded-sm px-3 py-2 bg-paper focus:border-forest-500 outline-none"
+              className="w-full border border-ink/15 rounded-sm px-3 py-2 bg-paper focus:border-teal-500 outline-none"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-forest-600 text-paper py-2.5 rounded-sm text-sm hover:bg-forest-700 transition-colors disabled:opacity-50"
+            className="w-full bg-teal-600 text-paper py-2.5 rounded-sm text-sm hover:bg-teal-700 transition-colors disabled:opacity-50"
           >
             {loading ? "Signing in…" : "Sign in"}
           </button>
@@ -83,7 +83,7 @@ export default function LoginPage() {
 
         <p className="text-center text-sm text-ink/50 mt-6">
           New here?{" "}
-          <Link href="/register" className="text-forest-700 font-medium hover:underline">
+          <Link href="/register" className="text-teal-600 font-medium hover:underline">
             Create an account
           </Link>
         </p>
