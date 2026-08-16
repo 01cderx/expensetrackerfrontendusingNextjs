@@ -2,16 +2,14 @@
 
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
-import { Wallet, TrendingDown, Calendar, Plus } from "lucide-react";
+import { Wallet, TrendingUp, TrendingDown, PiggyBank, Plus, BarChart3 } from "lucide-react";
 import Link from "next/link";
 import AppShell from "@/components/AppShell";
 import StatCard from "@/components/StatCard";
 import api from "@/lib/api";
-import { Expense, ExpenseSummary } from "@/lib/types";
+import { Expense, ExpenseSummary, PagedResponse } from "@/lib/types";
 import { useAuth } from "@/context/AuthContext";
 
-// Recharts is a fairly large library — load it only on the client, only when
-// this page actually renders, instead of bundling it into the initial page load.
 const CategoryPieChart = dynamic(() => import("@/components/CategoryPieChart"), {
   ssr: false,
   loading: () => (
@@ -37,10 +35,10 @@ export default function DashboardPage() {
       try {
         const [summaryRes, expensesRes] = await Promise.all([
           api.get("/expenses/summary"),
-          api.get("/expenses?page=0&size=6"),
+          api.get<PagedResponse<Expense>>("/expenses?page=0&size=6"),
         ]);
         setSummary(summaryRes.data);
-        setRecent(expensesRes.data.content);
+        setRecent(expensesRes.data.content ?? []);
       } finally {
         setLoading(false);
       }
@@ -52,53 +50,62 @@ export default function DashboardPage() {
     ? Object.entries(summary.byCategory).map(([name, value]) => ({ name, value }))
     : [];
 
-  const avgExpense =
-    recent.length > 0 && summary
-      ? summary.totalAllTime / Math.max(recent.length, 1)
-      : 0;
-
   return (
     <AppShell
       title={`Welcome back, ${user?.name?.split(" ")[0] ?? ""} 👋`}
-      subtitle="Here's where your money went."
+      subtitle="Here's where your money stands."
       action={
-        <Link
-          href="/expenses"
-          className="flex items-center gap-2 bg-teal-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors"
-        >
-          <Plus size={16} /> Add expense
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/reports"
+            className="hidden sm:flex items-center gap-2 border border-slate-200 text-slate-600 text-sm px-4 py-2 rounded-lg hover:bg-white transition-colors"
+          >
+            <BarChart3 size={16} /> Reports
+          </Link>
+          <Link
+            href="/expenses"
+            className="flex items-center gap-2 bg-teal-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors"
+          >
+            <Plus size={16} /> Add
+          </Link>
+        </div>
       }
     >
       {loading ? (
         <p className="text-slate-400">Loading…</p>
       ) : (
         <>
-          <div className="grid sm:grid-cols-3 gap-4 mb-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             <StatCard
-              label="Total spent all time"
-              value={formatCurrency(summary?.totalAllTime ?? 0)}
+              label="Total balance"
+              value={formatCurrency(summary?.balanceAllTime ?? 0)}
               icon={Wallet}
               tint="teal"
             />
             <StatCard
-              label="Spent this month"
-              value={formatCurrency(summary?.totalThisMonth ?? 0)}
+              label="Income this month"
+              value={formatCurrency(summary?.totalIncomeThisMonth ?? 0)}
+              icon={TrendingUp}
+              tint="teal"
+            />
+            <StatCard
+              label="Expenses this month"
+              value={formatCurrency(summary?.totalExpenseThisMonth ?? 0)}
               icon={TrendingDown}
               tint="rose"
             />
             <StatCard
-              label="Categories in use"
-              value={String(Object.keys(summary?.byCategory ?? {}).length)}
-              icon={Calendar}
+              label="Net this month"
+              value={formatCurrency(summary?.balanceThisMonth ?? 0)}
+              icon={PiggyBank}
               tint="amber"
             />
           </div>
 
           <div className="grid lg:grid-cols-5 gap-6">
             <div className="lg:col-span-2 bg-white rounded-2xl shadow-card border border-slate-100 p-6">
-              <h2 className="font-display text-base text-ink mb-1">By category</h2>
-              <p className="text-xs text-slate-500 mb-4">Share of total spend</p>
+              <h2 className="font-display text-base text-ink mb-1">Spending by category</h2>
+              <p className="text-xs text-slate-500 mb-4">All-time expense breakdown</p>
               {chartData.length === 0 ? (
                 <p className="text-sm text-slate-400 py-10 text-center">
                   No expenses recorded yet.
@@ -112,7 +119,7 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between px-6 pt-6 pb-4">
                 <div>
                   <h2 className="font-display text-base text-ink mb-1">
-                    Recent expenses
+                    Recent transactions
                   </h2>
                   <p className="text-xs text-slate-500">Your latest entries</p>
                 </div>
@@ -151,8 +158,12 @@ export default function DashboardPage() {
                           </p>
                         </div>
                       </div>
-                      <span className="tabular text-sm font-medium text-rose shrink-0">
-                        −{formatCurrency(e.amount)}
+                      <span
+                        className={`tabular text-sm font-medium shrink-0 ${
+                          e.type === "INCOME" ? "text-teal-600" : "text-rose"
+                        }`}
+                      >
+                        {e.type === "INCOME" ? "+" : "−"}{formatCurrency(e.amount)}
                       </span>
                     </div>
                   ))}
