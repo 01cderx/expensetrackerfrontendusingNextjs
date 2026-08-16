@@ -10,6 +10,8 @@ export interface Category {
   color: string;
 }
 
+export type TransactionType = "INCOME" | "EXPENSE";
+
 export interface Expense {
   id?: number;
   title: string;
@@ -19,11 +21,16 @@ export interface Expense {
   categoryId?: number;
   categoryName?: string;
   categoryColor?: string;
+  type: TransactionType;
 }
 
 export interface ExpenseSummary {
-  totalAllTime: number;
-  totalThisMonth: number;
+  totalIncomeAllTime: number;
+  totalExpenseAllTime: number;
+  balanceAllTime: number;
+  totalIncomeThisMonth: number;
+  totalExpenseThisMonth: number;
+  balanceThisMonth: number;
   byCategory: Record<string, number>;
 }
 
@@ -34,4 +41,19 @@ export interface PagedResponse<T> {
   totalElements: number;
   totalPages: number;
   last: boolean;
+}
+
+export interface TrendPoint {
+  label: string;
+  income: number;
+  expense: number;
+}
+
+export interface Report {
+  periodLabel: string;
+  totalIncome: number;
+  totalExpense: number;
+  net: number;
+  byCategory: Record<string, number>;
+  trend: TrendPoint[];
 }
