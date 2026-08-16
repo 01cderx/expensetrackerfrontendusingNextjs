@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, ChevronLeft, ChevronRight, Search } from "lucide-react";
 import AppShell from "@/components/AppShell";
 import ExpenseForm from "@/components/ExpenseForm";
 import ExpenseList from "@/components/ExpenseList";
@@ -21,25 +21,46 @@ export default function ExpensesPage() {
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
 
-  const loadData = async (targetPage = page) => {
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [typeFilter, setTypeFilter] = useState<string>("");
+  const [categoryFilter, setCategoryFilter] = useState<string>("");
+
+  // Debounce search input so we don't fire a request on every keystroke
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(search), 350);
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  // Reset to page 0 whenever a filter changes
+  useEffect(() => {
+    setPage(0);
+  }, [debouncedSearch, typeFilter, categoryFilter]);
+
+  const loadData = async () => {
     setLoading(true);
+    const params = new URLSearchParams();
+    params.set("page", String(page));
+    params.set("size", String(PAGE_SIZE));
+    if (debouncedSearch.trim()) params.set("search", debouncedSearch.trim());
+    if (typeFilter) params.set("type", typeFilter);
+    if (categoryFilter) params.set("categoryId", categoryFilter);
+
     const [expensesRes, categoriesRes] = await Promise.all([
-      api.get<PagedResponse<Expense>>(`/expenses?page=${targetPage}&size=${PAGE_SIZE}`),
-      api.get(categoriesEndpoint()),
+      api.get<PagedResponse<Expense>>(`/expenses?${params.toString()}`),
+      api.get("/categories"),
     ]);
-    setExpenses(expensesRes.data.content);
-    setTotalPages(expensesRes.data.totalPages);
-    setTotalElements(expensesRes.data.totalElements);
+    setExpenses(expensesRes.data.content ?? []);
+    setTotalPages(expensesRes.data.totalPages ?? 0);
+    setTotalElements(expensesRes.data.totalElements ?? 0);
     setCategories(categoriesRes.data);
     setLoading(false);
   };
 
-  const categoriesEndpoint = () => "/categories";
-
   useEffect(() => {
-    loadData(page);
+    loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]);
+  }, [page, debouncedSearch, typeFilter, categoryFilter]);
 
   const handleCreateOrUpdate = async (expense: Expense) => {
     if (editing?.id) {
@@ -49,10 +70,8 @@ export default function ExpensesPage() {
     }
     setShowForm(false);
     setEditing(null);
-    // After adding/editing, jump back to page 0 so the change is visible
-    // (list is sorted newest-first).
     setPage(0);
-    await loadData(0);
+    await loadData();
   };
 
   const handleEdit = (expense: Expense) => {
@@ -61,14 +80,16 @@ export default function ExpensesPage() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm("Delete this expense?")) return;
+    if (!confirm("Delete this transaction?")) return;
     await api.delete(`/expenses/${id}`);
-    await loadData(page);
+    await loadData();
   };
+
+  const hasActiveFilters = search || typeFilter || categoryFilter;
 
   return (
     <AppShell
-      title="Expenses"
+      title="Transactions"
       subtitle={`${totalElements} total entr${totalElements === 1 ? "y" : "ies"}`}
       action={
         !showForm && (
@@ -79,7 +100,7 @@ export default function ExpensesPage() {
             }}
             className="flex items-center gap-2 bg-teal-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors"
           >
-            <Plus size={16} /> Add expense
+            <Plus size={16} /> Add
           </button>
         )
       }
@@ -98,8 +119,48 @@ export default function ExpensesPage() {
         </div>
       )}
 
+      <div className="bg-white rounded-2xl shadow-card border border-slate-100 p-4 mb-4 flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
+          <Search
+            size={16}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+          />
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by title…"
+            className="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:border-teal-500 outline-none"
+          />
+        </div>
+        <select
+          value={typeFilter}
+          onChange={(e) => setTypeFilter(e.target.value)}
+          className="border border-slate-200 rounded-lg text-sm px-3 py-2 bg-slate-50 focus:border-teal-500 outline-none"
+        >
+          <option value="">All types</option>
+          <option value="EXPENSE">Expenses</option>
+          <option value="INCOME">Income</option>
+        </select>
+        <select
+          value={categoryFilter}
+          onChange={(e) => setCategoryFilter(e.target.value)}
+          className="border border-slate-200 rounded-lg text-sm px-3 py-2 bg-slate-50 focus:border-teal-500 outline-none"
+        >
+          <option value="">All categories</option>
+          {categories.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
       {loading ? (
         <p className="text-slate-400">Loading…</p>
+      ) : expenses.length === 0 && hasActiveFilters ? (
+        <div className="bg-white rounded-2xl border border-dashed border-slate-200 p-10 text-center">
+          <p className="text-slate-500">No transactions match your filters.</p>
+        </div>
       ) : (
         <>
           <ExpenseList expenses={expenses} onEdit={handleEdit} onDelete={handleDelete} />
