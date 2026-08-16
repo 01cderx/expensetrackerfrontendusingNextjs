@@ -16,6 +16,7 @@ const emptyExpense: Expense = {
   date: new Date().toISOString().slice(0, 10),
   notes: "",
   categoryId: undefined,
+  type: "EXPENSE",
 };
 
 export default function ExpenseForm({
@@ -46,7 +47,7 @@ export default function ExpenseForm({
     e.preventDefault();
     setError("");
     if (!form.title.trim()) {
-      setError("Give the expense a title.");
+      setError("Give it a title.");
       return;
     }
     if (!form.amount || form.amount <= 0) {
@@ -57,7 +58,7 @@ export default function ExpenseForm({
     try {
       await onSubmit(form);
     } catch (err: any) {
-      setError(err?.response?.data?.message || "Could not save expense.");
+      setError(err?.response?.data?.message || "Could not save transaction.");
     } finally {
       setSubmitting(false);
     }
@@ -69,7 +70,7 @@ export default function ExpenseForm({
       className="bg-white rounded-2xl shadow-card border border-slate-100 p-6 space-y-4"
     >
       <h3 className="font-display text-lg text-teal-600">
-        {initial?.id ? "Edit expense" : "Add an expense"}
+        {initial?.id ? "Edit transaction" : "Add a transaction"}
       </h3>
 
       {error && (
@@ -77,6 +78,31 @@ export default function ExpenseForm({
           {error}
         </p>
       )}
+
+      <div className="flex rounded-lg border border-slate-200 p-1 bg-slate-50 w-fit">
+        <button
+          type="button"
+          onClick={() => setForm((prev) => ({ ...prev, type: "EXPENSE" }))}
+          className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
+            form.type === "EXPENSE"
+              ? "bg-white text-rose shadow-sm"
+              : "text-slate-500"
+          }`}
+        >
+          Expense
+        </button>
+        <button
+          type="button"
+          onClick={() => setForm((prev) => ({ ...prev, type: "INCOME" }))}
+          className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
+            form.type === "INCOME"
+              ? "bg-white text-teal-600 shadow-sm"
+              : "text-slate-500"
+          }`}
+        >
+          Income
+        </button>
+      </div>
 
       <div>
         <label className="block text-xs uppercase tracking-widest text-ink/50 mb-1">
@@ -86,7 +112,7 @@ export default function ExpenseForm({
           name="title"
           value={form.title}
           onChange={handleChange}
-          placeholder="Coffee with Sam"
+          placeholder={form.type === "INCOME" ? "Freelance payment" : "Coffee with Sam"}
           className="w-full border border-slate-200 rounded-sm px-3 py-2 bg-paper focus:border-teal-500 outline-none"
         />
       </div>
@@ -159,7 +185,7 @@ export default function ExpenseForm({
           disabled={submitting}
           className="bg-teal-600 text-paper px-4 py-2 rounded-sm text-sm hover:bg-teal-700 transition-colors disabled:opacity-50"
         >
-          {submitting ? "Saving…" : initial?.id ? "Save changes" : "Add expense"}
+          {submitting ? "Saving…" : initial?.id ? "Save changes" : "Add transaction"}
         </button>
         <button
           type="button"
