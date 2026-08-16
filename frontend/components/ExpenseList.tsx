@@ -53,8 +53,8 @@ export default function ExpenseList({ expenses, onEdit, onDelete }: ExpenseListP
             </div>
           </div>
           <div className="flex items-center gap-4 shrink-0">
-            <span className="tabular font-medium text-rose">
-              −{formatCurrency(expense.amount)}
+            <span className={`tabular font-medium ${expense.type === "INCOME" ? "text-teal-600" : "text-rose"}`}>
+              {expense.type === "INCOME" ? "+" : "−"}{formatCurrency(expense.amount)}
             </span>
             <button
               onClick={() => onEdit(expense)}
